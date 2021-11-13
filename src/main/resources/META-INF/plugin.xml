@@ -1,0 +1,27 @@
+<idea-plugin>
+    <id>com.javidasgarov.controllerFinder</id>
+    <name>Java Controller Finder</name>
+    <vendor email="asgarov1@gmail.com">Javid Asgarov</vendor>
+
+    <description><![CDATA[
+    This Plugin allows to find the correct controller method for endpoint selected or copied
+    ]]></description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <action id="Finder.ControllerFinderAction"
+                class="com.javidasgarov.finder.action.FinderAction"
+                text="Find Controller"
+                description="Finds controller method that matches selected/copied text">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <keyboard-shortcut first-keystroke="ctrl alt a" keymap="$default"/>
+        </action>
+    </actions>
+</idea-plugin>
