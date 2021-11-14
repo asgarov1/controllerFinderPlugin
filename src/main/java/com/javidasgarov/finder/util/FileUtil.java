@@ -19,18 +19,9 @@ import static com.intellij.psi.search.GlobalSearchScope.projectScope;
 
 public class FileUtil {
 
+    public static final String PATH = "@Path";
     public static final String CONTROLLER = "@Controller";
     public static final String REST_CONTROLLER = "@RestController";
-
-    public static List<PsiClass> findControllerClasses(Project project) {
-        return FileTypeIndex.getFiles(JavaFileType.INSTANCE, projectScope(project))
-                .stream()
-                .filter(FileUtil::hasControllerAnnotation)
-                .map(PsiManager.getInstance(project)::findFile)
-                .map(FileUtil::getClass)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-    }
 
     public static List<PsiJavaFile> findControllerFiles(Project project) {
         return FileTypeIndex.getFiles(JavaFileType.INSTANCE, projectScope(project))
@@ -41,18 +32,12 @@ public class FileUtil {
                 .collect(Collectors.toList());
     }
 
-    private static List<PsiClass> getClass(PsiFile psiFile) {
-        return Stream.of(psiFile)
-                .map(file -> (PsiJavaFile) file)
-                .map(PsiJavaFile::getClasses)
-                .flatMap(Arrays::stream)
-                .collect(Collectors.toList());
-    }
-
     @SneakyThrows
     private static boolean hasControllerAnnotation(VirtualFile virtualFile) {
         String fileContent = new String(virtualFile.contentsToByteArray());
-        return fileContent.contains(CONTROLLER) || fileContent.contains(REST_CONTROLLER);
+        return fileContent.contains(CONTROLLER) ||
+                fileContent.contains(REST_CONTROLLER) ||
+                fileContent.contains(PATH);
     }
 
 }

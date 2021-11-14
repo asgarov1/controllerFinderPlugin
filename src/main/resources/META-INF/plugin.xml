@@ -4,7 +4,15 @@
     <vendor email="asgarov1@gmail.com">Javid Asgarov</vendor>
 
     <description><![CDATA[
-    This Plugin allows to find the correct controller method for endpoint selected or copied
+    This Plugin jumps to a controller plugin that matches:
+    - either a selected text or
+    - a text from clipboard
+    (selected text gets precedence)
+    <br/>
+    <br/>
+    Just copy the url you want to find, switch to intellij and right click -> select 'Find Controller)
+    <br/>
+    (or just use shortcut "CTRL + ALT + A")
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html

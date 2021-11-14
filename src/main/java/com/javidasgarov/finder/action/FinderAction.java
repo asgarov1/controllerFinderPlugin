@@ -27,7 +27,8 @@ public class FinderAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         Project project = event.getProject();
-        String searchUrl = getSelectedText(event).orElse(getClipboardContent());
+        String searchUrl = getSearchUrl(event);
+
         List<PsiJavaFile> controllerFiles = findControllerFiles(project);
 
         Optional<PsiAnnotation> matchedAnnotation = controllerFiles.stream()
@@ -38,7 +39,15 @@ public class FinderAction extends AnAction {
 
         matchedAnnotation.ifPresentOrElse(annotation -> moveToThatAnnotation(project, annotation),
                 () -> HintManager.getInstance().showInformationHint(event.getData(EDITOR),
-                        "Couldn't find any controller for '" + searchUrl + "'"));
+                        "Couldn't find any controller method for '" + searchUrl + "'"));
+    }
+
+    private String getSearchUrl(AnActionEvent event) {
+        String searchUrl = getSelectedText(event).orElse(getClipboardContent());
+        if (searchUrl.contains("?")) {
+            return searchUrl.substring(0, searchUrl.indexOf("?"));
+        }
+        return searchUrl;
     }
 
     @Override
