@@ -20,7 +20,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <notificationGroup id="Controller Finder Notification Group" displayType="BALLOON" key="controller.finder.group"/>
     </extensions>
 
     <actions>

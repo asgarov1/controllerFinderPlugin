@@ -1,22 +1,24 @@
 package com.javidasgarov.finder.service;
 
 import com.intellij.psi.PsiAnnotation;
-import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.javidasgarov.finder.util.TextUtil;
+import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.intellij.psi.impl.PsiImplUtil.findAttributeValue;
 import static com.javidasgarov.finder.util.TextUtil.appendPrefixToAllValues;
-import static com.javidasgarov.finder.util.TextUtil.getAnnotationValues;
 import static com.javidasgarov.finder.util.UrlUtil.isAMatch;
 
+@UtilityClass
 public class FinderService {
 
     private static final List<String> REQUEST_MAPPING_ANNOTATIONS = List.of(
@@ -29,6 +31,7 @@ public class FinderService {
             "@Path"
     );
     public static final String VALUE = "value";
+    public static final String PATH = "path";
 
     public static Optional<PsiAnnotation> findMatchingMethod(PsiJavaFile controller, String searchUrl) {
         List<PsiAnnotation> controllerAnnotations = getControllerAnnotations(controller);
@@ -48,13 +51,15 @@ public class FinderService {
     }
 
     public static List<String> getPrefixes(PsiAnnotation prefixAnnotation) {
-        return Stream.of(prefixAnnotation)
-                .map(annotation -> findAttributeValue(annotation, VALUE))
-                .filter(Objects::nonNull)
-                .map(PsiElement::getChildren)
+        List<String> prefixes = getAttributeValueOrPath(prefixAnnotation)
                 .map(TextUtil::getAnnotationValues)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+
+        if (prefixes.isEmpty()) {
+            return List.of("");
+        }
+        return prefixes;
     }
 
     private static boolean isControllerAnnotation(PsiAnnotation psiAnnotation) {
@@ -88,15 +93,45 @@ public class FinderService {
                 .findFirst();
     }
 
+    @NotNull
+    public static Optional<PsiAnnotation> getPsiAnnotation(String searchUrl, List<PsiJavaFile> controllerFiles) {
+        return controllerFiles.stream()
+                .map(controller -> findMatchingMethod(controller, searchUrl))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+    }
+
     private static List<String> generateUrls(PsiAnnotation annotation, List<String> prefixes) {
-        Optional<PsiAnnotationMemberValue> attributeValue = Optional.ofNullable(findAttributeValue(annotation, VALUE));
-        if (attributeValue.isPresent()) {
-            List<String> values = getAnnotationValues(attributeValue.get().getChildren());
-            return prefixes.stream()
-                    .map(prefix -> appendPrefixToAllValues(prefix, values))
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
-        }
-        return prefixes;
+        return prefixes.stream().
+                map(prefix -> appendPrefixToAllValues(prefix, getValues(annotation)))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> getValues(PsiAnnotation annotation) {
+        return getAttributeValueOrPath(annotation)
+                .map(TextUtil::getAnnotationValues)
+                .filter(Predicate.not(List::isEmpty))
+                .findFirst()
+                .orElse(List.of(""));
+    }
+
+    /**
+     * RequestMapping can be written either
+     * with value attribute (e.g. @GetMapping("/bookings"))
+     * or with path attribute (e.g. @GetMapping(path = "/bookings"))
+     * <p>
+     * Therefore this method gets children of both and concatenates them into a stream
+     *
+     * @param annotation
+     * @return
+     */
+    private static Stream<PsiElement[]> getAttributeValueOrPath(PsiAnnotation annotation) {
+        return Stream.of(
+                findAttributeValue(annotation, VALUE),
+                findAttributeValue(annotation, PATH))
+                .filter(Objects::nonNull)
+                .map(PsiElement::getChildren);
     }
 }
