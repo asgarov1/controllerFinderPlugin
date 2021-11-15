@@ -91,8 +91,8 @@ public class FinderService {
                 ));
 
         return annotationUrls.entrySet().stream()
-                .sorted((key, value) -> comparingUrls(value.getValue(), searchUrl))
                 .filter(entry -> isAMatch(entry.getValue(), searchUrl))
+                .sorted((key, value) -> comparingUrls(value.getValue(), searchUrl))
                 .map(Map.Entry::getKey)
                 .findFirst();
     }
