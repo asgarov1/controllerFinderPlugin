@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.intellij.psi.impl.PsiImplUtil.findAttributeValue;
+import static com.javidasgarov.finder.util.ComparatorUtil.comparingUrls;
 import static com.javidasgarov.finder.util.TextUtil.appendPrefixToAllValues;
 import static com.javidasgarov.finder.util.UrlUtil.isAMatch;
 
@@ -80,7 +81,9 @@ public class FinderService {
     public static Optional<PsiAnnotation> findMatchingAnnotation(Optional<PsiAnnotation> prefixAnnotation,
                                                                  List<PsiAnnotation> controllerAnnotations,
                                                                  String searchUrl) {
-        List<String> prefixes = prefixAnnotation.isPresent() ? getPrefixes(prefixAnnotation.get()) : List.of("");
+        List<String> prefixes = prefixAnnotation.map(FinderService::getPrefixes)
+                .orElseGet(() -> List.of(""));
+
         Map<PsiAnnotation, List<String>> annotationUrls = controllerAnnotations.stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
@@ -88,6 +91,7 @@ public class FinderService {
                 ));
 
         return annotationUrls.entrySet().stream()
+                .sorted((key, value) -> comparingUrls(value.getValue(), searchUrl))
                 .filter(entry -> isAMatch(entry.getValue(), searchUrl))
                 .map(Map.Entry::getKey)
                 .findFirst();
@@ -129,8 +133,8 @@ public class FinderService {
      */
     private static Stream<PsiElement[]> getAttributeValueOrPath(PsiAnnotation annotation) {
         return Stream.of(
-                findAttributeValue(annotation, VALUE),
-                findAttributeValue(annotation, PATH))
+                        findAttributeValue(annotation, VALUE),
+                        findAttributeValue(annotation, PATH))
                 .filter(Objects::nonNull)
                 .map(PsiElement::getChildren);
     }

@@ -68,14 +68,14 @@ class TextUtilTest {
 
     @Test
     void matchShouldWorkCorrectly() {
-        String searchUrlOne = "https://api.alpega.pw/sb-ui-dev/api/templateSnapshots/108231";
+        String searchUrlOne = "https:/localhost:8080/api/templateSnapshots/108231";
         String falseUrl = "/templateSnapshots/{templateSnapshotId}/groups/{groupId}/levels/{levelId}";
         String correctUrlOne = "/templateSnapshots/{templateSnapshotId}";
 
         assertFalse(matches(searchUrlOne, falseUrl));
         assertTrue(matches(searchUrlOne, correctUrlOne));
 
-        String searchUrlTwo = "https://api.alpega.pw/sb-ui-dev/api/bookingListHeaders";
+        String searchUrlTwo = "https://localhost:8080/api/bookingListHeaders";
         String correctUrlTwo = "/bookingListHeaders";
         assertTrue(matches(searchUrlTwo, correctUrlTwo));
 

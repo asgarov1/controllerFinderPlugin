@@ -9,7 +9,8 @@ import static com.javidasgarov.finder.util.TextUtil.matches;
 @UtilityClass
 public class UrlUtil {
     public static boolean isAMatch(List<String> controllerUrls, String searchUrl) {
-        return controllerUrls.stream().anyMatch(url -> matches(searchUrl, url));
+        return controllerUrls.stream()
+                .anyMatch(url -> matches(searchUrl, url));
     }
 
 }
