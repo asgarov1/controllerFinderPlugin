@@ -4,7 +4,7 @@
     <vendor email="asgarov1@gmail.com">Javid Asgarov</vendor>
 
     <description><![CDATA[
-    This Plugin jumps to a controller plugin that matches:
+    This Plugin allows to quickly navigate to a controller method that matches:
     - either a selected text or
     - a text from clipboard
     (selected text gets precedence)
@@ -12,15 +12,16 @@
     <br/>
     Just copy the url you want to find, switch to intellij and right click -> select 'Find Controller)
     <br/>
-    (or just use shortcut "CTRL + ALT + A")
+    (or use shortcut "CTRL + ALT + A")
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <notificationGroup id="Controller Finder Notification Group" displayType="BALLOON" key="controller.finder.group"/>
+        <notificationGroup id="Controller Finder Notification Group" displayType="BALLOON"/>
     </extensions>
 
     <actions>

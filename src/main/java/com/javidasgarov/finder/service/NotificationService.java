@@ -1,13 +1,18 @@
 package com.javidasgarov.finder.service;
 
 import com.intellij.codeInsight.hint.HintManager;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
+import com.intellij.notification.*;
+import com.intellij.notification.Notifications.Bus;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
+import static com.intellij.notification.NotificationDisplayType.BALLOON;
+import static com.intellij.notification.NotificationType.ERROR;
 import static com.intellij.openapi.actionSystem.CommonDataKeys.EDITOR;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
@@ -24,13 +29,13 @@ public class NotificationService {
     public static void displayMustSelectSomethingMessage(@NotNull AnActionEvent event) {
         ofNullable(event.getData(EDITOR)).ifPresentOrElse(
                 editor -> HintManager.getInstance().showErrorHint(editor, SELECT_A_URL_TEXT_OR_HAVE_IT_COPIED_MESSAGE),
-                () -> createNotification(SELECT_A_URL_TEXT_OR_HAVE_IT_COPIED_MESSAGE));
+                () -> createNotification(SELECT_A_URL_TEXT_OR_HAVE_IT_COPIED_MESSAGE, event.getProject()));
     }
 
     public static void displayNotFoundMessage(@NotNull AnActionEvent event, String searchUrl) {
         ofNullable(event.getData(EDITOR)).ifPresentOrElse(
                 editor -> HintManager.getInstance().showErrorHint(editor, format(COULD_NOT_FIND_MESSAGE, searchUrl)),
-                () -> createNotification(format(COULD_NOT_FIND_MESSAGE, searchUrl)));
+                () -> createNotification(format(COULD_NOT_FIND_MESSAGE, searchUrl), event.getProject()));
     }
 
     public static void displayMatchFoundMessage(@NotNull AnActionEvent event, String searchUrl) {
@@ -38,7 +43,11 @@ public class NotificationService {
                 editor -> HintManager.getInstance().showInformationHint(editor, format(MATCH_FOR_URL, searchUrl)));
     }
 
-    private void createNotification(String content) {
-        Notifications.Bus.notify(new Notification(CONTROLLER_FINDER_NOTIFICATION_GROUP, content, NotificationType.ERROR));
+    private void createNotification(String content, Project project) {
+        Optional.ofNullable(project).ifPresent(myProject ->
+                NotificationGroupManager.getInstance().getNotificationGroup(CONTROLLER_FINDER_NOTIFICATION_GROUP)
+                        .createNotification(content, ERROR)
+                        .notify(myProject)
+        );
     }
 }
