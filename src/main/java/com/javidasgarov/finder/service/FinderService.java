@@ -9,12 +9,15 @@ import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.intellij.psi.impl.PsiImplUtil.findAttributeValue;
+import static com.javidasgarov.finder.comparator.PsiAnnotationComparator.firstAppearsInFile;
+import static com.javidasgarov.finder.comparator.PsiAnnotationComparator.longestUrlFirst;
 import static com.javidasgarov.finder.util.ComparatorUtil.comparingUrls;
 import static com.javidasgarov.finder.util.TextUtil.appendPrefixToAllValues;
 import static com.javidasgarov.finder.util.UrlUtil.isAMatch;
@@ -31,10 +34,12 @@ public class FinderService {
             "@DeleteMapping",
             "@Path"
     );
-    public static final String VALUE = "value";
-    public static final String PATH = "path";
+    public static final String VALUE_ATTRIBUTE = "value";
+    public static final String PATH_ATTRIBUTE = "path";
 
-    public static Optional<PsiAnnotation> findMatchingMethod(PsiJavaFile controller, String searchUrl) {
+    public static Optional<Entry<PsiAnnotation, List<String>>> findMatchingAnnotation(
+            PsiJavaFile controller,
+            String searchUrl) {
         List<PsiAnnotation> controllerAnnotations = getControllerAnnotations(controller);
 
         int classDeclarationOffset = controller.getContainingFile().getText().indexOf("public class ");
@@ -78,9 +83,10 @@ public class FinderService {
                 .findFirst();
     }
 
-    public static Optional<PsiAnnotation> findMatchingAnnotation(Optional<PsiAnnotation> prefixAnnotation,
-                                                                 List<PsiAnnotation> controllerAnnotations,
-                                                                 String searchUrl) {
+    public static Optional<Entry<PsiAnnotation, List<String>>> findMatchingAnnotation(
+            Optional<PsiAnnotation> prefixAnnotation,
+            List<PsiAnnotation> controllerAnnotations,
+            String searchUrl) {
         List<String> prefixes = prefixAnnotation.map(FinderService::getPrefixes)
                 .orElseGet(() -> List.of(""));
 
@@ -92,17 +98,18 @@ public class FinderService {
 
         return annotationUrls.entrySet().stream()
                 .filter(entry -> isAMatch(entry.getValue(), searchUrl))
-                .sorted((key, value) -> comparingUrls(value.getValue(), searchUrl))
-                .map(Map.Entry::getKey)
-                .findFirst();
+                .min((key, value) -> comparingUrls(value.getValue(), searchUrl));
     }
 
     @NotNull
     public static Optional<PsiAnnotation> getPsiAnnotation(String searchUrl, List<PsiJavaFile> controllerFiles) {
-        return controllerFiles.stream()
-                .map(controller -> findMatchingMethod(controller, searchUrl))
+        return controllerFiles
+                .stream()
+                .map(controller -> findMatchingAnnotation(controller, searchUrl))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .sorted(longestUrlFirst.thenComparing(firstAppearsInFile))
+                .map(Entry::getKey)
                 .findFirst();
     }
 
@@ -133,8 +140,8 @@ public class FinderService {
      */
     private static Stream<PsiElement[]> getAttributeValueOrPath(PsiAnnotation annotation) {
         return Stream.of(
-                        findAttributeValue(annotation, VALUE),
-                        findAttributeValue(annotation, PATH))
+                        findAttributeValue(annotation, VALUE_ATTRIBUTE),
+                        findAttributeValue(annotation, PATH_ATTRIBUTE))
                 .filter(Objects::nonNull)
                 .map(PsiElement::getChildren);
     }

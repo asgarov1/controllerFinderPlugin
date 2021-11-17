@@ -64,8 +64,6 @@ class TextUtilTest {
         assertTrue(reducedValues.isEmpty());
     }
 
-    // match method
-
     @Test
     void matchShouldWorkCorrectly() {
         String searchUrlOne = "https:/localhost:8080/api/templateSnapshots/108231";
