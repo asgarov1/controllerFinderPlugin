@@ -6,8 +6,7 @@
     <description><![CDATA[
     This Plugin allows to quickly navigate to a controller method that matches:
     - either a selected text or
-    - a text from clipboard
-    (selected text gets precedence)
+    - a text from clipboard (selected text gets precedence)
     <br/>
     <br/>
     Just copy the url you want to find, switch to intellij and right click -> select 'Find Controller)

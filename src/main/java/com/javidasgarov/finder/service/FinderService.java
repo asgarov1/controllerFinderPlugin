@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 import static com.intellij.psi.impl.PsiImplUtil.findAttributeValue;
 import static com.javidasgarov.finder.comparator.PsiAnnotationComparator.firstAppearsInFile;
 import static com.javidasgarov.finder.comparator.PsiAnnotationComparator.longestUrlFirst;
-import static com.javidasgarov.finder.util.ComparatorUtil.comparingUrls;
 import static com.javidasgarov.finder.util.TextUtil.appendPrefixToAllValues;
 import static com.javidasgarov.finder.util.UrlUtil.isAMatch;
 
@@ -37,7 +36,7 @@ public class FinderService {
     public static final String VALUE_ATTRIBUTE = "value";
     public static final String PATH_ATTRIBUTE = "path";
 
-    public static Optional<Entry<PsiAnnotation, List<String>>> findMatchingAnnotation(
+    public static List<Entry<PsiAnnotation, List<String>>> findMatchingAnnotations(
             PsiJavaFile controller,
             String searchUrl) {
         List<PsiAnnotation> controllerAnnotations = getControllerAnnotations(controller);
@@ -46,7 +45,7 @@ public class FinderService {
         Optional<PsiAnnotation> prefixAnnotation = getPrefixAnnotation(controllerAnnotations, classDeclarationOffset);
 
         prefixAnnotation.ifPresent(controllerAnnotations::remove);
-        return findMatchingAnnotation(prefixAnnotation, controllerAnnotations, searchUrl);
+        return findMatchingAnnotations(prefixAnnotation, controllerAnnotations, searchUrl);
     }
 
     public static List<PsiAnnotation> getControllerAnnotations(PsiJavaFile controller) {
@@ -83,7 +82,7 @@ public class FinderService {
                 .findFirst();
     }
 
-    public static Optional<Entry<PsiAnnotation, List<String>>> findMatchingAnnotation(
+    public static List<Entry<PsiAnnotation, List<String>>> findMatchingAnnotations(
             Optional<PsiAnnotation> prefixAnnotation,
             List<PsiAnnotation> controllerAnnotations,
             String searchUrl) {
@@ -98,16 +97,15 @@ public class FinderService {
 
         return annotationUrls.entrySet().stream()
                 .filter(entry -> isAMatch(entry.getValue(), searchUrl))
-                .min((key, value) -> comparingUrls(value.getValue(), searchUrl));
+                .collect(Collectors.toList());
     }
 
     @NotNull
     public static Optional<PsiAnnotation> getPsiAnnotation(String searchUrl, List<PsiJavaFile> controllerFiles) {
         return controllerFiles
                 .stream()
-                .map(controller -> findMatchingAnnotation(controller, searchUrl))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .map(controller -> findMatchingAnnotations(controller, searchUrl))
+                .flatMap(Collection::stream)
                 .sorted(longestUrlFirst.thenComparing(firstAppearsInFile))
                 .map(Entry::getKey)
                 .findFirst();

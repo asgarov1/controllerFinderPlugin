@@ -17,7 +17,7 @@ import static org.apache.commons.lang.StringUtils.strip;
 public class TextUtil {
 
     private static final List<String> IRRELEVANT_CHARACTERS = List.of("\"", ",", " ", "{", "}" ,")", "(");
-    public static final String PLACEHOLDER_REGEX = "[A-z0-9]*";
+    public static final String PLACEHOLDER_REGEX = "[^/]*";
     public static final String URL_BEGINNING_REGEX = "([A-z0-9:/._-]*/)?";
     public static final String PLACEHOLDER = "\\{[^/]*}";
 
