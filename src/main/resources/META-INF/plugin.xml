@@ -26,7 +26,7 @@
     </extensions>
 
     <change-notes><![CDATA[
-        <h4>[1.4.0] - 2021-25-11</h4>
+        <h4>[1.4.0] - 2023-09-24</h4>
         <p>Added functionality to work also when part of path is defined with constants</p>
         <p>Updated to work with latest Intellij</p>
     ]]></change-notes>
