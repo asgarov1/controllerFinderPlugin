@@ -50,7 +50,7 @@ public class TextUtil {
         return reduceIntoActualValues(rawValues);
     }
 
-    public static List<String> reduceIntoActualValues(List<String> rawValues) {
+    static List<String> reduceIntoActualValues(List<String> rawValues) {
         List<String> result = new ArrayList<>();
         StringBuilder value = new StringBuilder();
         for (int i = 0; i < rawValues.size(); i++) {
@@ -74,7 +74,7 @@ public class TextUtil {
 
     @NotNull
     private static String append(String prefix, String value) {
-        if (value.length() > 0 && value.indexOf("/") != 0) {
+        if (!value.isEmpty() && value.indexOf("/") != 0) {
             value = "/" + value;
         }
         return (prefix + value).replace("//", "/");
