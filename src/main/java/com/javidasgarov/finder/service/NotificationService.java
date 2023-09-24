@@ -1,17 +1,14 @@
 package com.javidasgarov.finder.service;
 
 import com.intellij.codeInsight.hint.HintManager;
-import com.intellij.notification.*;
-import com.intellij.notification.Notifications.Bus;
+import com.intellij.notification.NotificationGroupManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-import static com.intellij.notification.NotificationDisplayType.BALLOON;
 import static com.intellij.notification.NotificationType.ERROR;
 import static com.intellij.openapi.actionSystem.CommonDataKeys.EDITOR;
 import static java.lang.String.format;

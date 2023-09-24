@@ -1,23 +1,22 @@
 package com.javidasgarov.finder.service;
 
 import com.intellij.psi.PsiAnnotation;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.javidasgarov.finder.util.TextUtil;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.intellij.psi.impl.PsiImplUtil.findAttributeValue;
 import static com.javidasgarov.finder.comparator.PsiAnnotationComparator.firstAppearsInFile;
 import static com.javidasgarov.finder.comparator.PsiAnnotationComparator.longestUrlFirst;
+import static com.javidasgarov.finder.util.AnnotationUtil.resolveAnnotationValues;
 import static com.javidasgarov.finder.util.TextUtil.appendPrefixToAllValues;
 import static com.javidasgarov.finder.util.UrlUtil.isAMatch;
 
@@ -56,10 +55,7 @@ public class FinderService {
     }
 
     public static List<String> getPrefixes(PsiAnnotation prefixAnnotation) {
-        List<String> prefixes = getAttributeValueOrPath(prefixAnnotation)
-                .map(TextUtil::getAnnotationValues)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+        List<String> prefixes = resolveAnnotationValues(prefixAnnotation);
 
         if (prefixes.isEmpty()) {
             return List.of("");
@@ -113,34 +109,8 @@ public class FinderService {
 
     private static List<String> generateUrls(PsiAnnotation annotation, List<String> prefixes) {
         return prefixes.stream().
-                map(prefix -> appendPrefixToAllValues(prefix, getValues(annotation)))
+                map(prefix -> appendPrefixToAllValues(prefix, resolveAnnotationValues(annotation)))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-    }
-
-    private static List<String> getValues(PsiAnnotation annotation) {
-        return getAttributeValueOrPath(annotation)
-                .map(TextUtil::getAnnotationValues)
-                .filter(Predicate.not(List::isEmpty))
-                .findFirst()
-                .orElse(List.of(""));
-    }
-
-    /**
-     * RequestMapping can be written either
-     * with value attribute (e.g. @GetMapping("/bookings"))
-     * or with path attribute (e.g. @GetMapping(path = "/bookings"))
-     * <p>
-     * Therefore this method gets children of both and concatenates them into a stream
-     *
-     * @param annotation
-     * @return
-     */
-    private static Stream<PsiElement[]> getAttributeValueOrPath(PsiAnnotation annotation) {
-        return Stream.of(
-                        findAttributeValue(annotation, VALUE_ATTRIBUTE),
-                        findAttributeValue(annotation, PATH_ATTRIBUTE))
-                .filter(Objects::nonNull)
-                .map(PsiElement::getChildren);
     }
 }

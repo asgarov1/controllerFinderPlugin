@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.intellij' version '1.2.1'
+    id 'org.jetbrains.intellij' version '1.15.0'
     id 'java'
 }
 
@@ -22,10 +22,12 @@ dependencies {
 }
 
 intellij {
+    version = '2023.2.2'
     plugins = ['com.intellij.java']
 }
 patchPluginXml {
-    sinceBuild = '203'
+    sinceBuild.set("204")
+    untilBuild.set("232.*")
 }
 
 buildSearchableOptions {
