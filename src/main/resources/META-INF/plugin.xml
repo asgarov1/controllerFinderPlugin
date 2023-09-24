@@ -8,6 +8,8 @@
     - either a selected text or
     - a text from clipboard (selected text gets precedence)
     <br/>
+    It is oriented towards Spring Controller's, should work with `@Path` annotations as well.
+    <br/>
     <br/>
     Just copy the url you want to find, switch to intellij and right click -> select 'Find Controller)
     <br/>
@@ -22,6 +24,12 @@
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Controller Finder Notification Group" displayType="BALLOON"/>
     </extensions>
+
+    <change-notes><![CDATA[
+        <h4>[1.4.0] - 2021-25-11</h4>
+        <p>Added functionality to work also when part of path is defined with constants</p>
+        <p>Updated to work with latest Intellij</p>
+    ]]></change-notes>
 
     <actions>
         <action id="Finder.ControllerFinderAction"
