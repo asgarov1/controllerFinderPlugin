@@ -52,13 +52,14 @@ public class FinderAction extends AnAction {
     }
 
     private Optional<String> getSearchUrl(AnActionEvent event) {
-        Optional<String> searchUrl = getSelectedText(event).or(ActionUtil::getClipboardContent);
-        if (searchUrl.isPresent()) {
-            if (searchUrl.get().contains("?")) {
-                return Optional.of(searchUrl.get().substring(0, searchUrl.get().indexOf("?")));
-            }
-            return searchUrl;
-        }
-        return Optional.empty();
+        return getSelectedText(event)
+                .or(ActionUtil::getClipboardContent)
+                .map(url -> {
+                    if (url.contains("?")) {
+                        return url.substring(0, url.indexOf("?"));
+                    }
+                    return url;
+                })
+                .map(String::trim);
     }
 }
