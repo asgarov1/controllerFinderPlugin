@@ -25,9 +25,10 @@ public class AnnotationUtil {
             return List.of();
         }
 
+        List<String> result;
         if (isAnnotationsValueConstant(annotation)) {
             // if contains a constant get the actual value of a constant
-            return Stream.of(
+            result = Stream.of(
                             findAttributeValue(annotation, VALUE_ATTRIBUTE),
                             findAttributeValue(annotation, PATH_ATTRIBUTE))
                     .filter(Objects::nonNull)
@@ -39,8 +40,14 @@ public class AnnotationUtil {
                     .stream()
                     .collect(Collectors.toList());
         } else {
-            return getValues(annotation);
+            result = getValues(annotation);
         }
+
+        if (result.isEmpty()) {
+            // necessary for prefix concatenation to work
+            return List.of("");
+        }
+        return result;
     }
 
     /**

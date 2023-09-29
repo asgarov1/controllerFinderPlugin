@@ -107,7 +107,7 @@ public class FinderService {
                 .findFirst();
     }
 
-    private static List<String> generateUrls(PsiAnnotation annotation, List<String> prefixes) {
+    static List<String> generateUrls(PsiAnnotation annotation, List<String> prefixes) {
         return prefixes.stream().
                 map(prefix -> appendPrefixToAllValues(prefix, resolveAnnotationValues(annotation)))
                 .flatMap(Collection::stream)

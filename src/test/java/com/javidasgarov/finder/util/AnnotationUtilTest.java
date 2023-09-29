@@ -81,4 +81,25 @@ class AnnotationUtilTest {
             assertEquals("myorder", result.get(0));
         }
     }
+
+    @Test
+    void testResolveAnnotationValues_whenValueIsEmpty() {
+        // GIVEN that I have a mock annotation that returns a constant value
+        PsiAnnotation mockAnnotation = Mockito.mock(PsiAnnotation.class);
+        when(mockAnnotation.getText()).thenReturn("\"ORDER\"");
+
+
+        try (MockedStatic<PsiImplUtil> psiImplUtilMock = Mockito.mockStatic(PsiImplUtil.class)) {
+
+            // AND I mocked the intermittent operations to return a constantLine
+            psiImplUtilMock.when(() -> PsiImplUtil.findAttributeValue(any(), any())).thenReturn(null);
+
+            // WHEN I call resolveAnnotationValues
+            List<String> result = AnnotationUtil.resolveAnnotationValues(mockAnnotation);
+
+            // THEN the correct value is returned
+            assertEquals(1, result.size());
+            assertEquals("", result.get(0));
+        }
+    }
 }

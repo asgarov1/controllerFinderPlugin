@@ -32,6 +32,9 @@
 
         <h4>[1.4.1] - 2023-09-27</h4>
         <p>Fixed a bug where if search URL had trailing space/line breaks, it wouldn't find it</p>
+
+        <h4>[1.4.2] - 2023-09-29</h4>
+        <p>Fixed a bug where annotations without value (e.g. `@PostMapping`) would not match</p>
     ]]></change-notes>
 
     <actions>
