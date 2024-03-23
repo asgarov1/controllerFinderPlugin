@@ -35,6 +35,9 @@
 
         <h4>[1.4.2] - 2023-09-29</h4>
         <p>Fixed a bug where annotations without value (e.g. `@PostMapping`) would not match</p>
+
+        <h4>[1.4.3] - 2024-03-23</h4>
+        <p>Updated plugin to work with latest Intellij version</p>
     ]]></change-notes>
 
     <actions>

@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.javidasgarov'
-version '1.4.2'
+version '1.4.3'
 
 repositories {
     mavenCentral()
@@ -25,12 +25,12 @@ dependencies {
 }
 
 intellij {
-    version = '2023.2.2'
+    version = '2021.3.3'
     plugins = ['com.intellij.java']
 }
 patchPluginXml {
-    sinceBuild.set("204")
-    untilBuild.set("232.*")
+    sinceBuild.set("213")
+    untilBuild.set("")
 }
 
 buildSearchableOptions {
@@ -39,4 +39,8 @@ buildSearchableOptions {
 
 test {
     useJUnitPlatform()
+}
+
+publishPlugin {
+    token = System.getenv("PUBLISH_TOKEN")
 }
