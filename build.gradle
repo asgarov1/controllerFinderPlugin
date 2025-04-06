@@ -38,7 +38,6 @@ dependencies {
 
 patchPluginXml {
     sinceBuild.set("222")
-    untilBuild.set("")
 }
 
 buildSearchableOptions {

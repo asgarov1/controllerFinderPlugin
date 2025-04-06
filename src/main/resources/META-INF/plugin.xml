@@ -11,7 +11,7 @@
     It is oriented towards Spring Controller's, should work with `@Path` annotations as well.
     <br/>
     <br/>
-    Just copy the url you want to find, switch to intellij and right click -> select 'Find Controller)
+    Just copy the url you want to find, switch to intellij and right click -> select 'Find Controller')
     <br/>
     (or use shortcut "CTRL + ALT + A")
     ]]></description>
@@ -37,6 +37,9 @@
         <p>Fixed a bug where annotations without value (e.g. `@PostMapping`) would not match</p>
 
         <h4>[1.4.3] - 2024-03-23</h4>
+        <p>Updated plugin to work with latest Intellij version</p>
+
+        <h4>[1.4.4] - 2025-04-06</h4>
         <p>Updated plugin to work with latest Intellij version</p>
     ]]></change-notes>
 
