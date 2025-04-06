@@ -44,7 +44,7 @@ class AnnotationUtilTest {
             PsiReference psiReferenceMock = Mockito.mock(PsiReference.class);
             PsiElement psiElementMock = Mockito.mock(PsiElement.class);
 
-            psiImplUtilMock.when(() -> PsiImplUtil.findAttributeValue(any(), any())).thenReturn(psiAnnotationMemberValueMock);
+            psiImplUtilMock.when(() -> PsiImplUtil.findAttributeValue(any(PsiAnnotation.class), any(String.class))).thenReturn(psiAnnotationMemberValueMock);
             when(psiReferenceMock.resolve()).thenReturn(psiElementMock);
             when(psiAnnotationMemberValueMock.getReference()).thenReturn(psiReferenceMock);
             when(psiElementMock.getText()).thenReturn(constantLine);
@@ -70,7 +70,7 @@ class AnnotationUtilTest {
             PsiAnnotationMemberValue psiAnnotationMemberValueMock = Mockito.mock(PsiAnnotationMemberValue.class);
             PsiElement psiElementMock = Mockito.mock(PsiElement.class);
 
-            psiImplUtilMock.when(() -> PsiImplUtil.findAttributeValue(any(), any())).thenReturn(psiAnnotationMemberValueMock);
+            psiImplUtilMock.when(() -> PsiImplUtil.findAttributeValue(any(PsiAnnotation.class), any(String.class))).thenReturn(psiAnnotationMemberValueMock);
             when(psiAnnotationMemberValueMock.getChildren()).thenReturn(new PsiElement[]{psiElementMock});
             when(psiElementMock.getText()).thenReturn("myorder");
 
@@ -92,7 +92,7 @@ class AnnotationUtilTest {
         try (MockedStatic<PsiImplUtil> psiImplUtilMock = Mockito.mockStatic(PsiImplUtil.class)) {
 
             // AND I mocked the intermittent operations to return a constantLine
-            psiImplUtilMock.when(() -> PsiImplUtil.findAttributeValue(any(), any())).thenReturn(null);
+            psiImplUtilMock.when(() -> PsiImplUtil.findAttributeValue(any(PsiAnnotation.class), any(String.class))).thenReturn(null);
 
             // WHEN I call resolveAnnotationValues
             List<String> result = AnnotationUtil.resolveAnnotationValues(mockAnnotation);
